@@ -9,3 +9,6 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth:sanctum');
 
 Route::apiResource('products', ProductController::class);
+
+
+Route::get('test', [ProductController::class, 'test']);

@@ -9,11 +9,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Laravel\Scout\Searchable;
 
 class Product extends Model
 {
     /** @use HasFactory<\Database\Factories\ProductFactory> */
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, Searchable;
 
     protected $fillable = [
         'name',
@@ -133,7 +134,16 @@ class Product extends Model
         }
     }
 
-    /** SCOPES */
+    /** Search */
+    public function toSearchableArray()
+    {
+        return [
+            'name' => $this->name,
+            'code' => $this->code,
+        ];
+    }
+
+    /** Scopes */
 
     #[Scope]
     protected function lowStock(Builder $query)
@@ -153,12 +163,33 @@ class Product extends Model
         return $query->where('stock', 'available');
     }
 
+    // #[Scope]
+    // protected function search($query, string $keyword)
+    // {
+    //     return $query->where(function ($q) use ($keyword) {
+    //         $q->where('name', 'like', "%{$keyword}%")
+    //             ->orWhere('code', 'like', "%{$keyword}%");
+    //     });
+    // }
+
     #[Scope]
-    protected function search($query, string $keyword)
+    protected function filter($query, array $filters)
     {
-        return $query->where(function ($q) use ($keyword) {
-            $q->where('name', 'like', "%{$keyword}%")
-                ->orWhere('code', 'like', "%{$keyword}%");
+        $query->when($filters['status'] ?? null, function ($query, $status) {
+            match ($status) {
+                'available' => $query->available(),
+                'low' => $query->lowStock(),
+                'empty' => $query->outOfStock(),
+                default => null
+            };
+        });
+
+        $query->when($filters['has_supplier'] ?? null, function ($query, $hasSupplier) {
+            match ($hasSupplier) {
+                'true' => $query->hasSupplier(),
+                'false' => $query->withOutSupplier(),
+                default => null
+            };
         });
     }
 

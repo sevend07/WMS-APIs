@@ -15,30 +15,32 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::query()->withCount('suppliers');
+        $perPage = $request->integer('per_page', 15);
+        $filters = $request->only(['status', 'has_supplier']);
 
-        if ($request->filled('search')) {
-            $query->search($request->search);
-        };
+        $products = Product::search($request->search)
+            ->query(fn($query) => $query->withCount('suppliers')->filter($filters))
+            ->paginate($perPage);
 
-        if ($request->filled('status')) {
-            match ($request->status) {
-                'available' => $query->available(),
-                'low' => $query->lowStock(),
-                'empty' => $query->outOfStock(),
-                default => null
-            };
-        };
+        // $products = $request->filled('search')
+        //     ? Product::search($request->search)
+        //     ->query(fn($query) => $query->withCount('suppliers')->filter($filters))
+        //     ->paginate($perPage)
+        //     : Product::withCount('suppliers')
+        //     ->filter($filters)
+        //     ->paginate($perPage);
 
-        if ($request->filled('has_supplier')) {
-            match ($request->has_supplier) {
-                'true' => $query->hasSupplier(),
-                'false' => $query->withOutSupplier(),
-                default => null
-            };
-        };
+        return ProductResource::collection($products);
+    }
 
-        $products = $query->paginate($request->get('per_page', 15));
+    public function test(Request $request)
+    {
+        $perPage = $request->integer('per_page', 15);
+        $filters = $request->only(['status', 'has_supplier']);
+
+        $products = Product::withCount('suppliers')
+            ->filter($filters)
+            ->paginate($perPage);
 
         return ProductResource::collection($products);
     }
@@ -53,8 +55,8 @@ class ProductController extends Controller
         $product = Product::create($data);
 
         return response([
-            'message' => 'Created',
-            'P' => new ProductResource($product)
+            'Message' => 'Created',
+            'Products' => new ProductResource($product)
         ]);
     }
 
@@ -75,7 +77,7 @@ class ProductController extends Controller
 
         return response([
             'Message' => 'Updated',
-            'data' => new ProductResource($product)
+            'Data' => new ProductResource($product)
         ]);
     }
 
