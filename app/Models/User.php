@@ -48,8 +48,28 @@ class User extends Authenticatable
         ];
     }
 
-    public function transactions(): HasMany
+    public function createdPurchaseOrders(): HasMany
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(PurchaseOrder::class, 'created_by');
+    }
+
+    public function approvedPurchaseOrders(): HasMany
+    {
+        return $this->hasMany(PurchaseOrder::class, 'approved_by');
+    }
+    
+    public function receivedGoodsReceipts(): HasMany
+    {
+        return $this->hasMany(GoodsReceipt::class, 'received_by');
+    }
+
+    public function inspectedReceiptItems(): HasMany
+    {
+        return $this->hasMany(GoodsReceiptDetail::class, 'qc_by');
+    }
+
+    public function createdDeliveries(): HasMany
+    {
+        return $this->hasMany(Delivery::class);
     }
 }

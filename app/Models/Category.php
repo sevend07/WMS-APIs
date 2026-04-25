@@ -13,7 +13,7 @@ class Category extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'name', 'description'
+        'name',
     ];
 
     public function products(): HasMany

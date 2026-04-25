@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Supplier extends Model
@@ -20,15 +21,14 @@ class Supplier extends Model
         'address',
     ];
 
-    public function products(): BelongsToMany
+    public function locations(): MorphMany
     {
-        return $this->belongsToMany(Product::class, 'supplier_products')
-            ->withTimestamps();
+        return $this->morphMany(Location::class, 'locateable');
     }
 
-    public function transactions(): HasMany
+    public function purchaseOrders(): HasMany
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(PurchaseOrder::class);
     }
 
     public function scopeSearch($query, string $keyword)

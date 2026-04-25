@@ -17,7 +17,7 @@ class ProductResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'code' => $this->code,
+            'sku' => $this->sku,
             'stock' => $this->stock,
             'unit' => $this->unit,
             'min_stock' => $this->min_stock,
@@ -27,6 +27,7 @@ class ProductResource extends JsonResource
                 $this->whenLoaded('suppliers')
             ),
             'created_at' => $this->created_at,
+            
             'updated_at' => $this->updated_at,
         ];
     }

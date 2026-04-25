@@ -18,10 +18,15 @@ class ProductController extends Controller
         $perPage = $request->integer('per_page', 15);
         $filters = $request->only(['status', 'has_supplier']);
 
-        $products = Product::search($request->search)
+        $products = $request->filled('search')
+            ? Product::search($request->search)
             ->query(fn($query) => $query->withCount('suppliers')->filter($filters))
+            ->paginate($perPage)
+            : Product::withCount('suppliers')
+            ->filter($filters)
             ->paginate($perPage);
 
+        return ProductResource::collection($products);
         // $products = $request->filled('search')
         //     ? Product::search($request->search)
         //     ->query(fn($query) => $query->withCount('suppliers')->filter($filters))
@@ -30,19 +35,6 @@ class ProductController extends Controller
         //     ->filter($filters)
         //     ->paginate($perPage);
 
-        return ProductResource::collection($products);
-    }
-
-    public function test(Request $request)
-    {
-        $perPage = $request->integer('per_page', 15);
-        $filters = $request->only(['status', 'has_supplier']);
-
-        $products = Product::withCount('suppliers')
-            ->filter($filters)
-            ->paginate($perPage);
-
-        return ProductResource::collection($products);
     }
 
     /**

@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Scout\Searchable;
 
@@ -19,23 +20,25 @@ class Product extends Model
     protected $fillable = [
         'name',
         'unit',
-        'min_stock',
     ];
 
     protected $attributes = [
         'stock' => 0,
     ];
 
-    public function suppliers(): BelongsToMany
+    public function categories(): BelongsTo
     {
-        return $this->belongsToMany(Supplier::class, 'supplier_products')
-            ->withTimestamps();
+        return $this->belongsTo(Category::class);
     }
 
-    public function transactions(): BelongsToMany
+    public function brand(): BelongsTo
     {
-        return $this->belongsToMany(Transaction::class)
-            ->using(TransactionDetail::class);
+        return $this->belongsTo(Brand::class);
+    }
+
+    public function productVariants(): HasMany
+    {
+        return $this->hasMany(ProductVariant::class);
     }
 
     /**
@@ -51,35 +54,31 @@ class Product extends Model
     /**
      * Generate unique product code
      */
-    public static function generateCode(string $prefix = 'PRD'): string
-    {
-        $lastProduct = self::where('code', 'like', "{$prefix}%")
-            ->latest('id')
-            ->first();
+    // public static function generateCode(string $prefix = 'PRD'): string
+    // {
+    //     $lastProduct = self::where('code', 'like', "{$prefix}%")
+    //         ->latest('id')
+    //         ->first();
 
-        if (!$lastProduct) {
-            return "{$prefix}-0001";
-        }
+    //     if (!$lastProduct) {
+    //         return "{$prefix}-0001";
+    //     }
 
-        $lastNumber = (int) substr($lastProduct->code, -4);
-        $newNumber = $lastNumber + 1;
+    //     $lastNumber = (int) substr($lastProduct->code, -4);
+    //     $newNumber = $lastNumber + 1;
 
-        return sprintf('%s-%04d', $prefix, $newNumber);
-    }
+    //     return sprintf('%s-%04d', $prefix, $newNumber);
+    // }
 
     /**
      * Auto-generate code on creation
      */
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::creating(function ($product) {
-            if (!$product->code) {
-                $product->code = self::generateCode();
-            }
-        });
-    }
+    //     static::created();
+    // }
 
     /** PRODUCT 
      * 
@@ -160,23 +159,14 @@ class Product extends Model
     #[Scope]
     protected function available(Builder $query)
     {
-        return $query->where('stock', 'available');
+        return $query->where('stock_status', 'available');
     }
-
-    // #[Scope]
-    // protected function search($query, string $keyword)
-    // {
-    //     return $query->where(function ($q) use ($keyword) {
-    //         $q->where('name', 'like', "%{$keyword}%")
-    //             ->orWhere('code', 'like', "%{$keyword}%");
-    //     });
-    // }
 
     #[Scope]
     protected function filter($query, array $filters)
     {
         $query->when($filters['status'] ?? null, function ($query, $status) {
-            match ($status) {
+            return match ($status) {
                 'available' => $query->available(),
                 'low' => $query->lowStock(),
                 'empty' => $query->outOfStock(),
@@ -185,7 +175,7 @@ class Product extends Model
         });
 
         $query->when($filters['has_supplier'] ?? null, function ($query, $hasSupplier) {
-            match ($hasSupplier) {
+            return match ($hasSupplier) {
                 'true' => $query->hasSupplier(),
                 'false' => $query->withOutSupplier(),
                 default => null

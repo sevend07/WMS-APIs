@@ -13,26 +13,19 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('code')->unique();
-            $table->string('unit');
-            $table->integer('stock')->default(0);
-            $table->integer('min_stock');
-            $table->string('stock_status', 20)->virtualAs(
-                "CASE 
-                    WHEN stock <= 0 THEN 'empty'
-                    WHEN stock > 0 AND stock <= min_stock THEN 'low'
-                    ELSE 'available'
-                END"
-            );
-            $table->index('name');
-            $table->index('code');
-            $table->index('stock_status');
-            $table->index(['stock', 'min_stock']);
-            $table->unsignedBigInteger('category_id')->nullable();
-            $table->foreign('category_id')->references('id')->on('categories')->nullOnDelete();
+            $table->text('description');
+
+            $table->foreignId('item_id')
+                ->constrained('items')
+                ->restrictOnDelete();
+            $table->foreignId('category_id')
+                ->constrained('categories')
+                ->restrictOnDelete();
+
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index('category_id', 'idx_product_category_id');
         });
     }
 
