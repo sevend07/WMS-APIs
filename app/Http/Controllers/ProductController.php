@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreproductRequest;
+use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateproductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Services\ProductService;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
+use Throwable;
 
 class ProductController extends Controller
 {
@@ -16,40 +19,40 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->integer('per_page', 15);
-        $filters = $request->only(['status', 'has_supplier']);
 
-        $products = $request->filled('search')
-            ? Product::search($request->search)
-            ->query(fn($query) => $query->withCount('suppliers')->filter($filters))
-            ->paginate($perPage)
-            : Product::withCount('suppliers')
-            ->filter($filters)
-            ->paginate($perPage);
-
-        return ProductResource::collection($products);
-        // $products = $request->filled('search')
-        //     ? Product::search($request->search)
-        //     ->query(fn($query) => $query->withCount('suppliers')->filter($filters))
-        //     ->paginate($perPage)
-        //     : Product::withCount('suppliers')
-        //     ->filter($filters)
-        //     ->paginate($perPage);
-
+        $product = Product::paginate($perPage);
+        
+        return response()->json([
+            "data" => $product,
+        ], 200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreproductRequest $request)
+    public function store(StoreProductRequest $request, ProductService $productService)
     {
-        $data = $request->validated();
+        try {
+            $product = $productService->createProduct($request->validated());
 
-        $product = Product::create($data);
-
-        return response([
-            'Message' => 'Created',
-            'Products' => new ProductResource($product)
-        ]);
+            return response()->json([
+                'success' => true,
+                'message' => 'Product berhasil dibuat.',
+                'data'    => $product,
+            ], 201);
+        } catch (QueryException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan pada database.',
+                'debug'   => config('app.debug') ? $e->getMessage() : null,
+            ], 500);
+        } catch (Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan pada server.',
+                'debug'   => config('app.debug') ? $e->getMessage() : null,
+            ], 500);
+        }
     }
 
     /**
@@ -57,7 +60,9 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return new ProductResource($product);
+        return response([
+            'data' => $product->load('productVariants')
+        ]);
     }
 
     /**
@@ -82,6 +87,17 @@ class ProductController extends Controller
 
         return response([
             'Message' => 'Deleted',
+        ]);
+    }
+
+    public function hardDelete($id)
+    {
+        $product = Product::withTrashed()->findOrFail($id);
+
+        $product->forceDelete();
+
+        return response([
+            'Message' => 'Product Permanently Deleted'
         ]);
     }
 }

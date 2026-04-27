@@ -21,14 +21,14 @@ return new class extends Migration
             $table->foreignId('purchase_order_id')
                 ->constrained('purchase_orders')
                 ->cascadeOnDelete();
-            $table->foreignId('material_id')
-                ->constrained('materials')
+            $table->foreignId('product_variant_id')
+                ->constrained('product_variants')
                 ->restrictOnDelete();
             $table->timestamps();
 
-            $table->unique(['purchase_order_id', 'material_id'], 'po_material_unique');
+            $table->unique(['purchase_order_id', 'product_variant_id'], 'po_product_variant_unique');
             $table->index('purchase_order_id', 'idx_detail_po');
-            $table->index('material_id', 'idx_detail_material');
+            $table->index('product_variant_id', 'idx_detail_product');
         });
     }
 

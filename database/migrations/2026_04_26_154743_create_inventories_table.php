@@ -11,22 +11,27 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('item_inventories', function (Blueprint $table) {
+        Schema::create('inventories', function (Blueprint $table) {
             $table->id();
             $table->integer('qty');
             $table->integer('min_stock');
             $table->integer('max_stock');
-            $table->foreignId('item_id')
-                ->constrained('items')
+            $table->foreignId('product_variant_id')
+                ->constrained('product_variants')
                 ->restrictOnDelete();
             $table->foreignId('warehouse_id')
                 ->constrained('warehouses')
                 ->restrictOnDelete();
+            $table->foreignId('warehouse_rack_id')
+                ->constrained('warehouse_racks')
+                ->restrictOnDelete();
             $table->timestamps();
 
-            $table->unique(['item_id', 'warehouse_id', 'item_warehouse_unique']);
-            $table->index('item_id', 'idx_item_inventory');
-            $table->index('warehouse_id', 'idx_item_warehouse');
+            $table->unique(['product_variant_id', 'warehouse_rack_id'], 'product_per_rack_unique');
+            $table->index(['product_variant_id', 'warehouse_id'], 'idx_product_warehouse_inventory');
+            $table->index('product_variant_id', 'idx_product_inventory');
+            $table->index('warehouse_id', 'idx_warehouse_inventory');
+            $table->index('warehouse_rack_id', 'idx_rack_inventory');
         });
     }
 

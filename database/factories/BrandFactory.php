@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Unit>
  */
-class UnitFactory extends Factory
+class BrandFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -16,8 +16,12 @@ class UnitFactory extends Factory
      */
     public function definition(): array
     {
+        // Daftar sepatu branded untuk hasil yang lebih realistis
+        $brands = ['Nike', 'Adidas', 'New Balance', 'Puma', 'Reebok', 'Vans', 'Converse'];
+
         return [
-            //
+            // unique() memastikan tidak ada nama yang sama terpilih dua kali
+            'name' => $this->faker->unique()->randomElement($brands),
         ];
     }
 }

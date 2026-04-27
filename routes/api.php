@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 // })->middleware('auth:sanctum');
 
 Route::apiResource('products', ProductController::class);
+Route::delete('/products/{id}/hard-delete', [ProductController::class, 'hardDelete']);
 
 
 Route::get('test', [ProductController::class, 'test']);

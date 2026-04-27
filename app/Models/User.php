@@ -53,14 +53,19 @@ class User extends Authenticatable
         return $this->hasMany(PurchaseOrder::class, 'created_by');
     }
 
-    public function approvedPurchaseOrders(): HasMany
-    {
-        return $this->hasMany(PurchaseOrder::class, 'approved_by');
-    }
-    
     public function receivedGoodsReceipts(): HasMany
     {
         return $this->hasMany(GoodsReceipt::class, 'received_by');
+    }
+
+    public function createdDeliveries(): HasMany
+    {
+        return $this->hasMany(Delivery::class);
+    }
+
+    public function approvedPurchaseOrders(): HasMany
+    {
+        return $this->hasMany(PurchaseOrder::class, 'approved_by');
     }
 
     public function inspectedReceiptItems(): HasMany
@@ -68,8 +73,11 @@ class User extends Authenticatable
         return $this->hasMany(GoodsReceiptDetail::class, 'qc_by');
     }
 
-    public function createdDeliveries(): HasMany
-    {
-        return $this->hasMany(Delivery::class);
-    }
+    /**
+     * NEED TO ADD ADITIONAL RELATION
+     * 
+     * # RELATION FOR APPROVAL
+     * # ALL DOCUMENTS CREATION NEED APPROVAL
+     * # ADD APPROVEDBY RELATION FOR ALL DOCUMENTS
+     */
 }

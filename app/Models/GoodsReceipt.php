@@ -5,12 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class GoodsReceipt extends Model
 {
     protected $fillable = [
         'status',
+        'receive_at',
         'note',
     ];
 
@@ -27,11 +27,6 @@ class GoodsReceipt extends Model
     public function warehouses(): BelongsTo
     {
         return $this->belongsTo(Warehouse::class);
-    }
-
-    public function goodsReceiptDetails(): HasMany
-    {
-        return $this->hasMany(GoodsReceiptDetail::class);
     }
 
     public function products(): BelongsToMany

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
             
-            $table->index('name', 'idx_category_name');
+            $table->unique('name', 'category_name_unique');
         });
     }
 

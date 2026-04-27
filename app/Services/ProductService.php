@@ -3,12 +3,24 @@
 namespace App\Services;
 
 use App\Models\Product;
+use Illuminate\Support\Facades\DB;
 
 class ProductService
 {
     public function createProduct(array $data)
     {
-        return Product::create($data);
+        return DB::transaction(function () use ($data) {
+            $product = Product::create([
+                'name' => $data['name'],
+                'description' => $data['description'] ?? null,
+                'brand_id' => $data['brand_id'],
+                'category_id' => $data['category_id']
+            ]);
+    
+            $product->productVariants()->createMany($data['variants']);
+    
+            return $product->load('productVariants');
+        });
     }
 
     public function updateProduct($product, $data)
@@ -16,18 +28,9 @@ class ProductService
         return $product->update($data);
     }
 
-    public function archiveProduct()
-    {
-        
-    }
+    public function archiveProduct() {}
 
-    public function getNeedRestockProduct()
-    {
+    public function getNeedRestockProduct() {}
 
-    }
-
-    public function generateSKU()
-    {
-        
-    }
+    public function generateSKU() {}
 }

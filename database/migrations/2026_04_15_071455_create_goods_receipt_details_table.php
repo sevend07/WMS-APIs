@@ -31,15 +31,15 @@ return new class extends Migration
             $table->dateTime('qc_at')->nullable();
 
             $table->foreignId('goods_receipt_id')
-                ->constrained('goodes_receipts')
+                ->constrained('goods_receipts')
                 ->cascadeOnDelete();
             $table->foreignId('purchase_order_detail_id')
                 ->constrained('purchase_orders')
                 ->restrictOnDelete();
             $table->foreignId('product_variant_id')
-                ->constrained('poducts')
+                ->constrained('product_variants')
                 ->cascadeOnDelete();
-            $table->foreignId('rack_id')
+            $table->foreignId('warehouse_rack_id')
                 ->nullable()
                 ->constrained('warehouse_racks')
                 ->restrictOnDelete();
@@ -55,7 +55,7 @@ return new class extends Migration
             $table->index('goods_receipt_id', 'idx_gr_detail_gr_id');
             $table->index('product_variant_id', 'idx_gr_detail_prod_vary_id');
             $table->index('purchase_order_detail_id', 'idx_gr_detail_po_detail_id');
-            $table->index('rack_id', 'idx_gr_detail_rack_id');
+            $table->index('warehouse_rack_id', 'idx_gr_detail_rack_id');
             $table->index('qc_by', 'idx_gr_detail_qc_by_user_id');
         });
     }

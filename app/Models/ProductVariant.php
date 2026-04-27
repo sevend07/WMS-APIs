@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -16,6 +17,7 @@ class ProductVariant extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'sku',
         'size',
         'color',
         'price',
@@ -33,7 +35,7 @@ class ProductVariant extends Model
 
     public function warehouses(): BelongsToMany
     {
-        return $this->belongsToMany(Warehouse::class)
+        return $this->belongsToMany(WarehouseRack::class)
             ->using(Inventory::class);
     }
 
@@ -55,8 +57,8 @@ class ProductVariant extends Model
             ->using(DeliveryItem::class);
     }
 
-    public function stockMovements(): MorphMany
+    public function stockMovements(): HasMany
     {
-        return $this->morphMany(StockMovement::class, 'moveable');
+        return $this->hasMany(StockMovement::class);
     }
 }

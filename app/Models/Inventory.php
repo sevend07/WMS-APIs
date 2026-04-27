@@ -22,4 +22,9 @@ class Inventory extends Model
     {
         return $this->belongsTo(Warehouse::class);
     }
+
+    public function warehouseRacks(): BelongsTo
+    {
+        return $this->belongsTo(WarehouseRack::class);
+    }
 }

@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->text('description');
+            $table->string('name');
+            $table->text('description')->nullable();
 
-            $table->foreignId('item_id')
-                ->constrained('items')
+            $table->foreignId('brand_id')
+                ->constrained('brands')
                 ->restrictOnDelete();
             $table->foreignId('category_id')
                 ->constrained('categories')
@@ -25,7 +26,13 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
+            $table->unique(
+                ['name', 'brand_id', 'category_id', 'deleted_at'],
+                'prod_name_brand_category_unique'
+            );
+            $table->index(['category_id', 'brand_id'], 'idx_product_filter');
             $table->index('category_id', 'idx_product_category_id');
+            $table->index('brand_id', 'idx_product_brand_id');
         });
     }
 

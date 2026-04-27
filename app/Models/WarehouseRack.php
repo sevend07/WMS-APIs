@@ -20,12 +20,22 @@ class WarehouseRack extends Model
 
     public function products(): BelongsToMany
     {
-        return $this->belongsToMany(Product::class)
+        return $this->belongsToMany(ProductVariant::class)
             ->using(Inventory::class);
+    }
+
+    public function goodsReceiptDetails(): HasMany
+    {
+        return $this->hasMany(GoodsReceiptDetail::class);
     }
 
     public function deliveryItems(): HasMany
     {
         return $this->hasMany(DeliveryItem::class);
+    }
+
+    public function stockMovements(): HasMany
+    {
+        return $this->hasMany(StockMovement::class);
     }
 }

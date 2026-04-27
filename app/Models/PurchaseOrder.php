@@ -16,8 +16,9 @@ class PurchaseOrder extends Model
         'total_amount',
         'currency',
         'status',
-        'note',
         'order_date',
+        'expected_delivery_date',
+        'note',
     ];
 
     public function createdBy(): BelongsTo
@@ -28,6 +29,12 @@ class PurchaseOrder extends Model
     public function approvedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(ProductVariant::class)
+            ->using(PurchaseOrderDetail::class);
     }
 
     public function suppliers(): BelongsTo

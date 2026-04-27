@@ -28,7 +28,7 @@ class Delivery extends Model
         return $this->belongsTo(Warehouse::class);
     }
 
-    public function productVariants(): BelongsToMany
+    public function products(): BelongsToMany
     {
         return $this->belongsToMany(ProductVariant::class)
             ->using(DeliveryItem::class);

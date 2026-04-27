@@ -26,10 +26,16 @@ class Supplier extends Model
         return $this->morphMany(Location::class, 'locateable');
     }
 
+    public function products(): BelongsToMany
+    {
+        return $this->belongsToMany(ProductVariant::class, 'product_suppliers');
+    }
+
     public function purchaseOrders(): HasMany
     {
         return $this->hasMany(PurchaseOrder::class);
     }
+
 
     public function scopeSearch($query, string $keyword)
     {

@@ -43,6 +43,7 @@ return new class extends Migration
             $table->index('destination_type', 'idx_delivery_destination_type');
             $table->index('status', 'idx_delivery_status');
             $table->index('shipped_at', 'idx_delivery_shipped_at');
+            $table->index('delivered_at', 'idx_delivery_deliered_at');
             $table->index('created_by', 'idx_delivery_created_by_user_id');
             $table->index('warehouse_id', 'idx_delivery_warehouse_id');
         });

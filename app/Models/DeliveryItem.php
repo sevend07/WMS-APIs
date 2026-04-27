@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class DeliveryItem extends Model
 {
@@ -18,7 +17,7 @@ class DeliveryItem extends Model
         return $this->belongsTo(Delivery::class);
     }
 
-    public function product_variants(): BelongsTo
+    public function products(): BelongsTo
     {
         return $this->belongsTo(ProductVariant::class);
     }
@@ -26,10 +25,5 @@ class DeliveryItem extends Model
     public function warehouse_racks(): BelongsTo
     {
         return $this->belongsTo(WarehouseRack::class);
-    }
-
-    public function stockMovements(): MorphMany
-    {
-        return $this->morphMany(StockMovement::class, 'moveable');
     }
 }
