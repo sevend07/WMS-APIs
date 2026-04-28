@@ -33,10 +33,6 @@ WORKDIR /var/www/html
 # Copy project files
 COPY . .
 
-# Clear Config
-RUN php artisan cache:clear
-RUN php artisan config:clear
-
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
