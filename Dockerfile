@@ -33,8 +33,9 @@ WORKDIR /var/www/html
 # Copy project files
 COPY . .
 
-# Install dependencies
-RUN composer install --optimize-autoloader --no-dev
+# Clear Config
+RUN php artisan cache:clear
+RUN php artisan config:clear
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
@@ -42,4 +43,4 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 
 EXPOSE 9000
 
-CMD ["php-fpm"]
+ENTRYPOINT [ "entrypoint.sh" ] 
