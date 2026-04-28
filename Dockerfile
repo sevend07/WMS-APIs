@@ -35,7 +35,9 @@ COPY . .
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache && chmod +x entrypoint.sh
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache \
+    && chmod +x /usr/local/bin/entrypoint.sh \
+    && chmod -R 755 /usr/local/bin/entrypoint.sh
 
 EXPOSE 9000
 
