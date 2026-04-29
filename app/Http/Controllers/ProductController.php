@@ -6,7 +6,7 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateproductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
-use App\Services\ProductService;
+use App\Services\ProductManagementService;
 use Illuminate\Http\Request;
 use Illuminate\Database\QueryException;
 use Throwable;
@@ -30,7 +30,7 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProductRequest $request, ProductService $productService)
+    public function store(StoreProductRequest $request, ProductManagementService $productService)
     {
         try {
             $product = $productService->createProduct($request->validated());

@@ -2,11 +2,31 @@
 
 namespace App\Services;
 
+use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 
-class ProductService
+class ProductManagementService
 {
+    public function bulkCreateCategory(array $data) 
+    {
+        return DB::transaction(function () use ($data) {
+            $category = Category::fillAndInsert($data);
+
+            return $category;
+        });
+    }
+
+    public function bulkCreateBrand(array $data) 
+    {
+        return DB::transaction(function () use ($data) {
+            $brand = Brand::fillAndInsert($data);
+
+            return $brand;
+        });
+    }
+
     public function createProduct(array $data)
     {
         return DB::transaction(function () use ($data) {

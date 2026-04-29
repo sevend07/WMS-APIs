@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Models\Category;
+use App\Services\ProductManagementService;
+use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
@@ -13,15 +15,36 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $categories = Category::all();
+
+        return response()->json([
+            'success' => true,
+            'data'    => $categories,
+        ], 200);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCategoryRequest $request)
+    public function store(StoreCategoryRequest $request, ProductManagementService $productService)
     {
-        //
+        // Implementasi penyimpanan kategori menggunakan service
+    }
+
+    public function bulkStore(Request $request, ProductManagementService $productManagementService)
+    {
+        $validated = $request->validate([
+            "categories" => "required|array|min:1",
+            "categories.*.name" => "required|string|max:20|distinct|unique:categories,name",
+        ]);
+
+        $productManagementService->bulkCreateCategory($validated['categories']);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Category berhasil dibuat.',
+            'data'    => $validated,
+        ], 201);
     }
 
     /**

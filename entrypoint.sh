@@ -4,7 +4,7 @@ set -e
 echo "==> Checking vendor..."
 if [ ! -f "vendor/autoload.php" ]; then
     echo "==> Running composer install..."
-    composer install --optimize-autoloader --no-dev
+    composer install --optimize-autoloader
 fi
 
 echo "==> Checking .env..."
