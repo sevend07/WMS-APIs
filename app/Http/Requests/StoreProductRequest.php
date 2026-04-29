@@ -25,8 +25,18 @@ class StoreProductRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'brand_id' => 'required|integer|exists:brands,id',
-            'category_id' => 'required|integer|exists:categories,id',
+            'brand_id' => [
+                'required',
+                'integer',
+                'exists:brands,id',
+                Rule::unique('products', 'brand_id')->whereNull('deleted_at')
+            ],
+            'category_id' => [
+                'required',
+                'integer',
+                'exists:categories,id',
+                Rule::unique('products', 'category_id')->whereNull('deleted_at')
+            ],
             'variants' => 'required|array|min:1',
             'variants.*.sku' => [
                 'required',
